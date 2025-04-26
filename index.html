@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BGU Invaders - Our way to get 100 Score</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar">
+      <a href="#home" class="logo">
+        <img src="images/logo.png" alt="Site Logo" height= "50" width= "50"/>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#welcome" onclick="showSection('welcome')">ראשי</a></li>
+        <!-- <li><a href="#game" onclick="showSection('game')">בואו נשחק</a></li> -->
+        <li><a href="#login" onclick="showSection('login')">כניסה</a></li>
+        <li><a href="#register" onclick="showSection('register')">הרשמה</a></li>
+        <button id="openModal">📘 מידע נוסף </button>
+
+        <!-- <li><a href="#game-configuration" onclick="showSection('game-configuration')">הגדרות משחק</a></li> -->
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div id="welcome" class="page-section">
+      <section>
+        <img src = "/images/logo.png" height="350" width="350"  />
+
+        <h2>איך מתחילים לשחק?</h2>
+        <p> מתחילים לשחק על ידי הרשמה למערכת, או כניסה - אם נרשמתם כבר בעבר.(ללא ריפרש)</p>
+        <button id="welcomeBtnRegister">הרשמה</button>
+        <button id="welcomeBtnLogin">כניסה</button>
+      </section>
+    </div>
+
+    <div id="login" class="page-section">
+      <section>
+        <h2>כניסת משתמש</h2>
+        <p>על מנת להתחיל לשחק יש להכנס למשתמש.</p>
+        <form>
+            <label>שם משתמש:</label><br/>
+            <input type="text" id="email_login" name="email_login" required/><br/><br/>
+          
+            <label>סיסמא:</label><br/>
+            <input type="password" id="password_login" name="password_login" required/><br/><br/>
+          
+            <button type="button" id="submit_login">שליחה</button>
+          </form>
+          
+      </section>
+    </div>
+
+    <div id="register" class="page-section">
+      <section>
+        <h2>הרשמה</h2>
+        </p>
+
+
+        <form>
+          <label>שם משתמש:</label><br/>
+          <input type="text" id="register_account_name" required/><br/><br/>
+
+          <label>סיסמא:</label><br/>
+          <input type="password" id="register_password" required/><br/><br/>
+
+          <label>וידוא סיסמא:</label><br/>
+          <input type="password" id="register_validate_password" required/><br/><br/>
+
+          <label>שם פרטי:</label><br/>
+          <input type="text" id="register_name" required/><br/><br/>
+
+          <label>שם משפחה:</label><br/>
+          <input type="text" id="register_family_name" required/><br/><br/>
+
+          <label>אימייל:</label><br/>
+          <input type="email" id="register_email" required/><br/><br/>
+
+          <label>תאריך לידה:</label><br/>
+          <input type="date" id="register_dob" required/><br/><br/>
+
+          <button type="button" id="submit_register" onclick="">שליחה</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="game-configuration" class="page-section">
+        <section>
+          <h2>הגדרות</h2>
+          <p>לפני שנתחיל לשחק, חשוב לנו שיהיה לך נוח</p>
+          <form>
+            <label>הכנס מקש לירייה (תו אחד בלבד):</label><br/>
+            <input type="text" id="shoot_key" name="shoot_key" maxlength="1" required/><br/><br/>
+      
+            <label>זמן משחק בדקות - זמן דיפולטיבי הוא 2 דקות(אם תבחרו פחות הזמן יישאר 2 דקות):</label><br/>
+            <input type="number" name="duration" required/><br/><br/>
+      
+            <button id="submit_game_configuration">התחלת משחק</button>
+          </form>
+        </section>
+      </div>
+      
+      <script>
+        $(function () {
+          $('#shoot_key').on('input', function () {
+            let val = $(this).val();
+            if (val.length > 1) {
+              $(this).val(val.charAt(0));
+            }
+          });
+        });
+      </script>
+
+
+    <div id="game" class="page-section">
+        
+      <section>
+        <canvas id="gameCanvas" width="1366" height="768" ></canvas>
+            <button id="newGameButton"
+             style="position:absolute; top:20px; right:260px; z-index:10;">
+                    🔄 New Game
+            </button>
+        <audio id="fireSound" src="audios/cannon_fire.mp3"></audio>
+        <audio id="hitSound" src="audios/target_hit.mp3"></audio>
+        <audio id="backgroundMusic" src="audios/theme.mp3"></audio>
+        <audio id="lose" src="audios/lose.wav"></audio>
+        <audio id="playerHitSound" src="audios/player_got_hit.mp3"></audio>
+
+      </section>
+
+      <div id="gameOverlay" class="overlay" style="display:none">
+        <div class="overlay‑box">
+          <h2 id="finalMsg"></h2>
+      
+          <h3>היסטוריית השיאים שלך</h3>
+          <ul id="scoreList"></ul>
+      
+          <button id="newGameBtn">New&nbsp;Game</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="game-play" class="page-section">
+      <section>
+        <h2>מהלך המשחק</h2>
+        <p>כאן יופיע תוכן הקשור למה שקורה תוך כדי המשחק.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; יצירת קשר: shaikar@post.bgu.ac.il || arsch@post.bgu.ac.il</p>
+  </footer>
+
+  <script>
+    function showSection(id) {
+      // hide all
+      document.querySelectorAll('.page-section')
+        .forEach(sec => sec.style.display = 'none');
+      // show target
+      const current = document.getElementById(id);
+      if (current) current.style.display = 'block';
+
+      // music control
+      if (id === 'gameCanvas') {
+        backgroundMusic.play();
+      } else {
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+      }
+    }
+
+    // Modal open/close
+    $(function(){
+      $('#openModal').click(() => $('#myModal').show());
+      $('.close').click(() => $('#myModal').hide());
+      $(window).click(e => {
+        if (e.target.id === 'myModal') $('#myModal').hide();
+      });
+    });
+  </script>
+</body>
+
+  <!-- Modal -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>מידע נוסף</h2>
+      <p>מגישים:</p>
+      <p>208395608 - Shai Karniro Da Silva </p>
+      <p>313228876 - Ariel Schwartz</p>
+      <p>כן השתמשנו בטמפלייט לעיצוב</p>
+      <p>בפרויקט זה נעשה שימוש בJQuery</p>
+      <p>הקשיים בהם נתקלנו:</p>
+      <p>- תזוזה אלכסונית של השחקנים והיריות</p>
+      <p>מה מימשנו:</p>
+      <p>תזוזה אלכסונית, צבעים שונים לאויבים - אדום הכי גבוה במתן הניקוד, יריות אלכסוניות, מהירות גדלה עד 4 פעמים וכל חוקי המשחק שהתבקשנו לממש.</p>
+    </div>
+  </div>
+
+  <script>
+    function showSection(id) {
+      const sections = document.querySelectorAll('.page-section');
+      sections.forEach(sec => sec.style.display = 'none');
+      const current = document.getElementById(id);
+      if (current) current.style.display = 'block';
+    }
+
+    
+  </script>
+<script type="module" src="game.js"></script>
+
+</body>
+</html>
