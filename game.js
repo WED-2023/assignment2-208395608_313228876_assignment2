@@ -112,10 +112,8 @@ $('#submit_register').on('click', e => {
 $('#submit_game_configuration').on('click', e =>{
   e.preventDefault();
   backgroundMusic.pause();
-  // only change shootKey if the box isn't empty
   const chosen = $('#shoot_key').val().trim();
   if (chosen) {
-    // if you displayed "Space" for the space bar, map it back:
     shootKey = chosen === 'Space' ? ' ' : chosen;
   }
 
@@ -208,9 +206,9 @@ function handleNewGame(){
             y: 50 + r*spacing,
             radius,
             score: 20 - 5*r,
-            dx:  baseSpeed,   // start marching right
-            dy:  baseSpeed ,   // always march down
-            tintColor: tint    // << store it here
+            dx:  baseSpeed,   
+            dy:  baseSpeed ,   
+            tintColor: tint    
 
           });
       }
@@ -263,7 +261,6 @@ function update(){
   /* shoot */
   if (keys[shootKey]) {
     shoot();
-    // immediately clear that key so you can tap it again
     delete keys[shootKey];
   }
   /* update bullets */
